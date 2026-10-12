@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 
+STANDARD_DELIMITED: str= ','
 def longer(words: list) -> list:
     if not words:
         return []
@@ -9,7 +10,6 @@ def longer(words: list) -> list:
     average = sum(lengths) / len(lengths)
 
     return [word for word in words if len(word) > average]
-STANDARD_DELIMITED: str= ','
 
 if __name__ == '__main__':
     print(f'Введите слова,используя "{STANDARD_DELIMITED}" как делимитр:\n')

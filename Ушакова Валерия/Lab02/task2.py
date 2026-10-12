@@ -16,17 +16,17 @@ if __name__ == '__main__':
     numbers = [float(p) for p in parts]
 
     while True:
-        print('1 — по возрастанию, ')
-        print('2 — по убыванию\n')
+        print('а'— сортируем по возрастанию, ')
+        print('б' — сортируем по убыванию\n')
         choice = input('Выбери:\n')
         n = len(numbers)
-        if choice == '1':
+        if choice == 'а':
             for i in range(n):
                 for j in range(n - 1):
                     if numbers[j] > numbers[j + 1]:
                         numbers[j], numbers[j + 1] = numbers[j + 1], numbers[j]
             break
-        elif choice == '2' :
+        elif choice == 'б' :
             for i in range(n):
                 for j in range(n - 1):
                     if numbers[j] < numbers[j + 1]:

@@ -1,11 +1,15 @@
-#!/usr/bin/env python3
+def nrev(d):
+    nrev_sort = sorted(d)
+    return tuple(nrev_sort)
 
+def rev(d):
+    rev_sort = sorted(d, reverse=True)
+    return tuple(rev_sort)
 
 if __name__ == '__main__':
     while True:
         text = input('Введите числа через запятую:\n').strip()
         parts = text.replace(',', ' ').split()
-
 
         try:
             nums = [float(p) for p in parts]
@@ -16,23 +20,17 @@ if __name__ == '__main__':
     numbers = [float(p) for p in parts]
 
     while True:
-        print('а'— сортируем по возрастанию, ')
-        print('б' — сортируем по убыванию\n')
+        print('Введите 1, чтобы отсортировать по возрастанию \n')
+        print('Введите 2, чтобы по убыванию\n')
         choice = input('Выбери:\n')
-        n = len(numbers)
-        if choice == 'а':
-            for i in range(n):
-                for j in range(n - 1):
-                    if numbers[j] > numbers[j + 1]:
-                        numbers[j], numbers[j + 1] = numbers[j + 1], numbers[j]
+
+        if choice == '1':
+            result = nrev(numbers)
             break
-        elif choice == 'б' :
-            for i in range(n):
-                for j in range(n - 1):
-                    if numbers[j] < numbers[j + 1]:
-                         numbers[j], numbers[j + 1] = numbers[j + 1], numbers[j]
+        elif choice == '2':
+            result = rev(numbers)
             break
         else:
             print('Впишите числа 1 или 2!\n')
 
-    print('Результат:\n', numbers)
+    print('Результат:\n', result)

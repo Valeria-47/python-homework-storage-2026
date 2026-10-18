@@ -12,7 +12,6 @@ def factorial_iterative(n):
     return result
 
 if __name__ == '__main__':
-    while True:
         text = input('Введите целое неотрицательное число:\n').strip()
 
         try:

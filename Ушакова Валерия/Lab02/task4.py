@@ -11,7 +11,6 @@ def count_vowels(text):
     return count
 
 def filtr(**kwargs):
-    result = {}
 
     for key, value in kwargs.items():
         if not isinstance(value, str):
@@ -25,19 +24,18 @@ def filtr(**kwargs):
 
 if __name__ == '__main__':
     data = {}
+    result = {}
+    print('Введите пары: сначала ключ, потом значение.')
+    print('Для завершения введите нажмите Enter')
+
     while True:
-        print('Введите пары: сначала ключ, потом значение.\n')
-        print('Для завершения введите "стоп" в поле ключа.\n')
+        key = input('Ключ: ').strip()
 
-        while True:
-            key = input('Ключ: ').strip()
+        if not key:
+            break
 
-            if key.lower() == 'стоп':
-                break
+        value = input('Значение: ').strip()
+        data[key] = value
 
-            value = input('Значение: ').strip()
-            data[key] = value
-
-        result = filtr(**data)
-        print('\nПодходящие:')
-        print(result)
+    result = filtr(**data)
+    print(f'\nПодходящие: {result}')

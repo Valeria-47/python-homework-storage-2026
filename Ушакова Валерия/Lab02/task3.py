@@ -1,36 +1,38 @@
 #!/usr/bin/env python3
 
 
+STANDARD_DELIMITED = ','
+
 def hay(*args):
     integers = [a for a in args if isinstance(a, int)]
+
     if not integers:
-        print('Целых нет, аргументы :\n')
+        print('Целых нет, аргументы:')
         for a in args:
-            TYPPE : str = type(a).__name__
-            return -1
+            print(f'{a} — {type(a).__name__}')
+        return
 
     res = 1
     for n in integers:
         res *= n
     return res
 
-STANDARD_DELIMITED: str= ','
-if __name__ == '__main__':
-    while True:
-        text = input(f'Введите значения через "{STANDARD_DELIMITED}"\n')
-        parts = text.replace(',' , ' ').split()
-        values = []
-        for p in parts:
-            try:
-                values.append(int(p))
-            except ValueError:
-                try:
-                    values.append(float(p))
-                except ValueError:
-                    values.append(p)
-        print('Введенные значения:\n')
-        for v in values:
-            TYYPE : str= type(v).__name__
-            print(f' {v} - {TYYPE}')
 
-        print('Произведение:', hay(*values))
+if __name__ == '__main__':
+    text = input(f'Введите значения через "{STANDARD_DELIMITED}":\n')
+    parts = text.replace(STANDARD_DELIMITED, ' ').split()
+
+    values = []
+    for p in parts:
+        if p.isdigit():
+            values.append(int(p))
+        elif p.replace('.', '', 1).replace('-', '', 1).isdigit():
+            values.append(float(p))
+        else:
+            values.append(p)
+
+    print('Введенные значения:')
+    for v in values:
+        print(f'{v} - {type(v).__name__}')
+
+    print('Произведение:', hay(*values))

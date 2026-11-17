@@ -1,167 +1,255 @@
 #!/usr/bin/env python3
 
-
 class Person:
+    """Базовый класс для описания человека."""
+    
+    DEFAULT_GENDER_MALE = 'М'
+    DEFAULT_GENDER_FEMALE = 'Ж'
+
     def __init__(self, name, gender, age):
+        """
+        Инициализация человека.
+        :param name: Имя человека.
+        :param gender: Пол ('М' или 'Ж').
+        :param age: Возраст.
+        :raises ValueError: Если имя пустое, пол некорректен или возраст вне диапазона 0-150.
+        """
         if not name:
             raise ValueError("Имя не может быть пустым!")
-        if gender not in ['М', 'Ж']:
+            
+        # Используем константы и кортеж вместо списка
+        if gender not in (self.DEFAULT_GENDER_MALE, self.DEFAULT_GENDER_FEMALE):
             raise ValueError("Пол должен быть 'М' или 'Ж'!")
+            
         if age < 0 or age > 150:
             raise ValueError("Некорректный возраст!")
 
-        self.name = name
-        self.gender = gender
-        self.age = age
+        # Защищенные переменные (одно подчеркивание)
+        self._name = name
+        self._gender = gender
+        self._age = age
 
-    def introduce(self):
-        return f"Привет, меня зовут {self.name}, мне {self.age} лет, мой пол: {self.gender}."
+    @property
+    def name(self):
+        """Возвращает имя человека."""
+        return self._name
+
+    @property
+    def age(self):
+        """Возвращает возраст человека."""
+        return self._age
 
     def check_adulthood(self):
-        return self.age >= 18
+        """
+        Проверяет, является ли человек совершеннолетним.
+        :return: True, если возраст >= 18, иначе False.
+        """
+        return self._age >= 18
 
-    @classmethod
-    def from_variables(cls, name, gender, age):
-        return cls(name, gender, age)
+    def __str__(self):
+        """
+        Строковое представление человека (вместо introduce).
+        :return: Строка с приветствием.
+        """
+        return f"Привет, меня зовут {self._name}, мне {self._age} лет, мой пол: {self._gender}."
 
 
 class Employee(Person):
+    """Класс сотрудника."""
+    
     def __init__(self, name, gender, age, position, salary, monthly_expenses):
+        """
+        Инициализация сотрудника.
+        :param position: Должность.
+        :param salary: Зарплата.
+        :param monthly_expenses: Ежемесячные расходы.
+        :raises ValueError: Если зарплата или расходы отрицательные.
+        """
         super().__init__(name, gender, age)
-
+        
         if salary < 0 or monthly_expenses < 0:
             raise ValueError("Зарплата и расходы не могут быть отрицательными!")
 
-        self.position = position
-        self.salary = salary
-        self.monthly_expenses = monthly_expenses
-        self.is_alive = True
-
+        self._position = position
+        self._salary = salary
+        self._monthly_expenses = monthly_expenses
+        self._is_alive = True
 
     def work(self):
+        """
+        Абстрактный метод работы. 
+        :raises NotImplementedError: Всегда, так как должен быть переопределен в наследниках.
+        """
         raise NotImplementedError("Наследники должны реализовать метод work()")
 
     def calculate_cash_flow(self, months):
-        if self.monthly_expenses > self.salary:
-            self.is_alive = False
+        """
+        Расчет накоплений за N месяцев.
+        :param months: Количество месяцев.
+        :return: Строка с результатом накоплений или сообщением о смерти.
+        """
+        if self._monthly_expenses > self._salary:
+            self._is_alive = False
             return "Сотрудник потратил больше, чем заработал, и умер от голода."
 
-        total_income = (self.salary - self.monthly_expenses) * months
+        total_income = (self._salary - self._monthly_expenses) * months
         return f"За {months} мес. накоплено: {total_income}"
 
     def calculate_savings_until_pension(self, pension_age=65):
-        if not self.is_alive:
+        """
+        Расчет накоплений до пенсии.
+        :param pension_age: Пенсионный возраст (по умолчанию 65).
+        :return: Строка с результатом накоплений.
+        """
+        if not self._is_alive:
             return "Сотрудник мертв, копить некому."
 
-        years_left = pension_age - self.age
+        years_left = pension_age - self._age
         if years_left <= 0:
             return "Уже на пенсии."
 
         months_left = years_left * 12
-        if self.monthly_expenses > self.salary:
-            self.is_alive = False
+        if self._monthly_expenses > self._salary:
+            self._is_alive = False
             return "Сотрудник умрет раньше пенсии из-за долгов."
 
-        savings = (self.salary - self.monthly_expenses) * months_left
-        return f"До пенсии ({pension_age} лет) осталось {years_left} лет. Накопит: {savings}"
+        savings = (self._salary - self._monthly_expenses) * months_left
+        return f"До пенсии осталось {years_left} лет. Накопит: {savings}"
+
+    def __str__(self):
+        """
+        Строковое представление сотрудника.
+        :return: Базовая информация плюс должность.
+        """
+        base_info = super().__str__()
+        return f"{base_info} Должность: {self._position}."
 
 
 class Manager(Employee):
+    """Класс Менеджер."""
+    
     def __init__(self, name, gender, age, position, salary, monthly_expenses, subordinates=None):
+        """
+        Инициализация менеджера.
+        :param subordinates: Список подчиненных (по умолчанию пустой).
+        """
         super().__init__(name, gender, age, position, salary, monthly_expenses)
-        if subordinates is None:
-            self.subordinates = []
-        else:
-            self.subordinates = subordinates
+        self._subordinates = subordinates if subordinates is not None else []
 
     def work(self):
-        return f"Менеджер {self.name} управляет процессами."
-
-    def introduce(self):
-        base_info = super().introduce()
-        return f"{base_info} Я менеджер, у меня {len(self.subordinates)} подчиненных."
+        """
+        Реализация метода работы.
+        :return: Описание процесса работы.
+        """
+        return f"Менеджер {self._name} управляет процессами."
 
     def conduct_meeting(self):
-        return f"Менеджер {self.name} проводит работу с {len(self.subordinates)} подчиненными."
+        """
+        Проведение митинга.
+        :return: Описание митинга.
+        """
+        return f"Менеджер {self._name} проводит митинг."
+
+    def __str__(self):
+        """
+        Строковое представление менеджера.
+        :return: Информация о менеджере и подчиненных.
+        """
+        base_info = super().__str__()
+        return f"{base_info} В подчинении: {len(self._subordinates)} чел."
 
 
 class Developer(Employee):
+    """Класс Разработчик."""
+    
     def __init__(self, name, gender, age, position, salary, monthly_expenses, languages=None):
+        """
+        Инициализация разработчика.
+        :param languages: Список языков программирования.
+        """
         super().__init__(name, gender, age, position, salary, monthly_expenses)
-        if languages is None:
-            self.languages = []
-        else:
-            self.languages = languages
+        self._languages = languages if languages is not None else []
 
     def work(self):
-        return f"Разработчик {self.name} пишет код."
-
-    def introduce(self):
-        base_info = super().introduce()
-        return f"{base_info} Я разработчик, знаю языки: {', '.join(self.languages)}."
+        """
+        Реализация метода работы.
+        :return: Описание процесса работы.
+        """
+        return f"Разработчик {self._name} пишет код."
 
     def write_random_code(self):
-        if not self.languages:
+        """
+        Пишет код на языке из списка.
+        :return: Описание процесса написания кода.
+        """
+        if not self._languages:
             return "Не знает языков программирования."
-        current_lang = self.languages[0]
-        return f"Разработчик {self.name} пишет код на {current_lang}."
+        return f"Разработчик {self._name} пишет код на {self._languages[0]}."
+
+    def __str__(self):
+        """
+        Строковое представление разработчика.
+        :return: Информация о разработчике и его языках.
+        """
+        base_info = super().__str__()
+        langs = ", ".join(self._languages) if self._languages else "нет"
+        return f"{base_info} Языки: {langs}."
 
 
 class Designer(Employee):
+    """Класс Дизайнер."""
+    
     def __init__(self, name, gender, age, position, salary, monthly_expenses, tools=None):
+        """
+        Инициализация дизайнера.
+        :param tools: Список инструментов (Figma, Photoshop и т.д.).
+        """
         super().__init__(name, gender, age, position, salary, monthly_expenses)
-        if tools is None:
-            self.tools = []
-        else:
-            self.tools = tools
+        self._tools = tools if tools is not None else []
 
     def work(self):
-        return f"Дизайнер {self.name} рисует макеты."
-
-    def introduce(self):
-        base_info = super().introduce()
-        return f"{base_info} Я дизайнер, владею инструментами: {', '.join(self.tools)}."
+        """
+        Реализация метода работы.
+        :return: Описание процесса работы.
+        """
+        return f"Дизайнер {self._name} рисует макеты."
 
     def create_layout(self):
-        if not self.tools:
+        """
+        Создает макет.
+        :return: Описание процесса создания макета.
+        """
+        if not self._tools:
             return "Нет инструментов для работы."
-        current_tool = self.tools[0]
-        return f"Дизайнер {self.name} создал макет, используя {current_tool}."
+        return f"Дизайнер {self._name} создал макет, используя {self._tools[0]}."
+
+    def __str__(self):
+        """
+        Строковое представление дизайнера.
+        :return: Информация о дизайнере и его инструментах.
+        """
+        base_info = super().__str__()
+        tools = ", ".join(self._tools) if self._tools else "нет"
+        return f"{base_info} Инструменты: {tools}."
 
 
 if __name__ == '__main__':
-    print("1. Демонстрация работы Дизайнера")
-    designer1 = Designer(
-        name="Анна",
-        gender="Ж",
-        age=25,
-        position="UX/UI",
-        salary=80000,
-        monthly_expenses=40000,
-        tools=["Figma", "Photoshop"]
-    )
-    print(designer1.work(),designer1.introduce(), designer1.create_layout() )
+    print("--- Демонстрация работы ---")
+    designer1 = Designer("Анна", "Ж", 25, "UX/UI", 80000, 40000, ["Figma", "Photoshop"])
+    print(designer1.work())
+    print(designer1)
+    print(designer1.create_layout())
 
-    print("\n 2. Проверка на случай, если инструментов нет")
+    print("\nПроверка, если инструментов нет:")
     designer2 = Designer("Олег", "М", 30, "Junior", 50000, 20000)
     print(designer2.create_layout())
 
-    print("\n3. Демонстрация полиморфизма и прочего")
-    manager = Manager("Алексей", "М", 35, "PM", 100000, 50000, ["Иван", "Петр"])
-    developer = Developer("Ольга", "Ж", 25, "Backend", 80000, 40000, ["Python", "C++"])
+    print("\nПроверка накоплений и СМЕРТИ:")
+    print(f"Анна за 5 месяцев: {designer1.calculate_cash_flow(5)}")
 
-    staff = [manager, developer, designer1]
-    for person in staff:
-        print(person.introduce())
-        print(person.work())
-
-    print("\n4. Проверка накоплений и СМЕРТИ ")
-    print(f"Анна накопит за 5 месяцев: {designer1.calculate_cash_flow(5)}")
     poor_guy = Developer("Вася", "М", 22, "Junior", 30000, 40000, ["Python"])
     print(f"Вася за 1 месяц: {poor_guy.calculate_cash_flow(1)}")
 
-    print("\n 5. Расчет до пенсии")
+    print("\nРасчет до пенсии:")
     print(designer1.calculate_savings_until_pension())
     print(poor_guy.calculate_savings_until_pension())
-    designer2 = Designer("Андрей", "М", 30, "Junior", 50000, 20000)
-    print(designer2.create_layout())

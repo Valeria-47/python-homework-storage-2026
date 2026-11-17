@@ -59,15 +59,6 @@ class BankAccount:
         self.__balance -= amount
         self.__history.append(f"Снятие: -{amount}. Баланс: {self.__balance}")
 
-    @classmethod
-    def create_account(cls, owner, initial_balance):
-        """
-        Альтернативный конструктор для создания счета.
-        :param owner: Владелец счета.
-        :param initial_balance: Начальный баланс.
-        :return: Экземпляр класса BankAccount.
-        """
-        return cls(owner, initial_balance)
 
     def __str__(self):
         """

@@ -48,3 +48,4 @@ if __name__ == '__main__':
         print(f"{greeting} Вам {args.age} лет.")
     else:
         print(greeting)
+
